@@ -1,4 +1,4 @@
-# RH Summit Connect 2022 ZTP Edge Demo
+# RH Summit Connect 2022 ZTP Edge Demo.
 
 A collection of resources used to provision Single Node Openshift (SNO) with RHACM.
 
