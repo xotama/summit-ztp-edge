@@ -1,0 +1,23 @@
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: ztp-sno
+  namespace: ztp-sno
+spec:
+  applicationManager:
+    #    argocdCluster: false
+    enabled: true
+  certPolicyController:
+    enabled: true
+  clusterLabels:
+    name: ztp-sno
+    cloud: Baremetal
+    vendor: auto-detect
+  clusterName: ztp-sno
+  clusterNamespace: ztp-sno
+  iamPolicyController:
+    enabled: true
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true

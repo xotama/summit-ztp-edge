@@ -1,0 +1,23 @@
+apiVersion: hive.openshift.io/v1
+kind: ClusterDeployment
+metadata:
+  name: ztp-sno
+  namespace: ztp-sno
+spec:
+  baseDomain: edge.xotama.com
+  clusterName: ztp-sno
+  controlPlaneConfig:
+    servingCertificates: {}
+  installed: false
+  clusterInstallRef:
+    group: extensions.hive.openshift.io
+    kind: AgentClusterInstall
+    name: ztp-sno
+    version: v1beta1
+  platform:
+    agentBareMetal:
+      agentSelector:
+        matchLabels:
+          cluster-name: "ztp-sno"
+  pullSecretRef:
+    name: pullsecret-sno

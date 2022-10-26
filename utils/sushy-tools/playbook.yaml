@@ -1,0 +1,99 @@
+- name: Sushy Tools installation playbook
+  hosts: localhost
+  vars_files:
+    - vars.yaml
+  become: true
+  tasks:
+    - name: Populate package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Fail if libvirt package is not installed
+      fail:
+        msg: "Package libvirt is not installed"
+      when: '"libvirt" not in ansible_facts.packages'
+    
+    - name: Fail if libvirt package is not installed
+      fail:
+        msg: "Package qemu-kvm is not installed"
+      when: '"qemu-kvm" not in ansible_facts.packages'
+
+    - name: Define dedicated network
+      community.libvirt.virt_net:
+        command: define
+        name: "{{ net_name }}"
+        xml: '{{ lookup("template", "templates/bridge.xml.j2") }}'
+      when: define_custom_net
+
+    - name: Start dedicated network
+      community.libvirt.virt_net:
+        command: start
+        name: "{{ net_name }}"
+      when: define_custom_net
+
+    - name: Install sushy-tools package
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        virtualenv: "{{ sushy_venv }}"
+      loop: "{{ pip_packages }}"
+
+    - name: Generate private key
+      community.crypto.openssl_privatekey:
+        path: "{{ sushy_venv }}/{{ openssl_private_key }}"
+
+    - name: Generate certificate signing request
+      community.crypto.openssl_csr:
+        path: "{{ sushy_venv }}/{{ openssl_csr }}"
+        privatekey_path: "{{ sushy_venv }}/{{ openssl_private_key }}"
+        common_name: "{{ csr_common_name }}"
+
+    - name: Generate certificate
+      community.crypto.x509_certificate:
+        path: "{{ sushy_venv }}/{{ x509_certificate }}"
+        privatekey_path: "{{ sushy_venv }}/{{ openssl_private_key }}"
+        csr_path: "{{ sushy_venv }}/{{ openssl_csr }}"
+        provider: selfsigned      
+
+    - name: Generate htpasswd
+      community.general.htpasswd:
+        path: "{{ sushy_venv }}/htpasswd"
+        name: "{{ sushy_admin_user }}"
+        password: "{{ sushy_admin_password }}"
+        crypt_scheme: bcrypt
+        owner: root
+        group: root
+        mode: 0640 
+        state: present 
+
+    - name: Template out Sushy emulator config
+      ansible.builtin.template:
+        src: templates/sushy-emulator.conf.j2
+        dest: "{{ sushy_venv }}/sushy-emulator.conf"
+        mode: 0644
+        owner: root
+        group: root
+
+    - name: Template out Sushy tools service
+      ansible.builtin.template:
+        src: templates/sushy-tools.service.j2
+        dest: /etc/systemd/system/sushy-tools.service
+        mode: 0644
+        owner: root
+        group: root
+
+    - name: Enable and start sushy-tools service
+      ansible.builtin.systemd:
+        name: sushy-tools.service
+        enabled: true
+        state: restarted  
+    
+    - name: Test Redfish APIs 
+      ansible.builtin.uri:
+        url: "https://{{ sushy_emulator_listen_ip }}:{{ sushy_emulator_listen_port }}/redfish/v1/Systems"
+        method: GET
+        user: "{{ sushy_admin_user }}"
+        password: "{{ sushy_admin_password }}"
+        force_basic_auth: yes
+        return_content: no
+        validate_certs: no
+      register: redfish_get

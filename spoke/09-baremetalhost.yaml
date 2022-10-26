@@ -1,0 +1,19 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: ztp-sno
+  namespace: ztp-sno
+  labels:
+    infraenvs.agent-install.openshift.io: "ztp-sno"
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: "ztp-sno"
+spec:
+  online: true
+  bmc:
+    address: redfish-virtualmedia+http://192.168.100.1:8000/redfish/v1/Systems/a7d50779-083b-48c9-8110-b7fb7d2515ba
+    credentialsName: bmc-sno
+    disableCertificateVerification: true
+  bootMACAddress: 52:54:00:e3:af:c1
+  automatedCleaningMode: metadata

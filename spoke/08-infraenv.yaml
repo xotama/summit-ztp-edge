@@ -1,0 +1,25 @@
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  labels:
+    agentclusterinstalls.extensions.hive.openshift.io/location: Rome
+    networkType: dhcp
+  name: ztp-sno
+  namespace: ztp-sno
+spec:
+  clusterRef:
+    name: ztp-sno
+    namespace: ztp-sno
+  sshAuthorizedKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDWLWpn68GHh/wRjb/8GHqd1Irs/MeMMcvyKEvzyEctp7Q3nrEWg9Q8InJOnSPs9b3cTwtP3LAhQ9bYjOf41sG6UozXIL1SBEqQRFJhfj3dl3dFjP/+Wbg/wCY/uTuVdIc5JwBDhawsTcQyMSFwhmNuRdfTXfSUiDTdhRJOB95I6+hIhD8qcbGbOvYLyvNbRvFniI2I+ZRUXW804IduJpMDRKHmWVvDpkeM4VERvaO5PmWcpvdMaBqWwLqu4vrYeVSkMNUs6YF9pgrrmx2BSF4lM5cTwSFnWxKSQ/2w+17uMT331LYLDZQySRSfnLPzBG2HASilBQoqGlyKI4iyClCm18esPsZmb2KFmwn86PMofW/e/pf1TqSh8TEvmaGzx3M9uEdf6Lx7bu6mxClTTghbEaKzWmp6wFX9dCfFo/QIxY2MWdluwB7UiJLKWZGXACE04HVMZp986+jIxQaxM1iS31TArqZNrBNmU89p0N14sG7pyK0UjBOuZzPkKyW2S2g1GrAC54Mufauc5jWIidYfSbTzVNTfa1HMgx9j+vY8VW9JSC31Dn1Qg0hZW/WU3Plj+hd1seE86F5f0pRNV2HXJ3ykopC6ZuYRzwoAwN0uH0INSk5LEYdcAHD08G1dohnqMAPXJMb5Y+dGZvC+7St8VLRby/QWtllBD7o2Q21A7Q== nicolo.amato@redhat.com'
+  agentLabelSelector:
+    matchLabels:
+      cluster-name: ztp-sno
+  pullSecretRef:
+    name: pullsecret-sno
+  agentLabels:
+    agentclusterinstalls.extensions.hive.openshift.io/location: Rome
+  cpuArchitecture: x86_64
+  ipxeScriptType: DiscoveryImageAlways
+  nmStateConfigLabelSelector:
+    matchLabels:
+      infraenvs.agent-install.openshift.io: ztp-sno
